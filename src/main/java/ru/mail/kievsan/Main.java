@@ -14,7 +14,7 @@ public class Main {
     public static final AtomicInteger beautyWordsXL = new AtomicInteger();
 
     public static void main(String[] args) {
-        String[] words = getWords(100_000, 3);
+        String[] words = getWords(100_000, 4);
 
         threadsForChooseBeautyWords(words, List.of(
                 wordChecker::isPalindrome,
@@ -77,7 +77,6 @@ public class Main {
     }
 
     public static String[] getWords(int number, int len) {
-        len = Math.max(len, 3);
         Random random = new Random();
         String[] texts = new String[number];
         for (int i = 0; i < texts.length; i++) {
@@ -87,6 +86,7 @@ public class Main {
     }
 
     public static String generateText(String letters, int len) {
+        len = Math.max(len, 3);
         Random random = new Random();
         StringBuilder text = new StringBuilder();
         for (int i = 0; i < len; i++) {
