@@ -7,14 +7,14 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class Main {
-    public static final Random random = new Random();
     public static WordChecker wordChecker = new WordChecker();
     public static final AtomicInteger beautyWord3L = new AtomicInteger();
     public static final AtomicInteger beautyWord4L = new AtomicInteger();
     public static final AtomicInteger beautyWord5L = new AtomicInteger();
+    public static final AtomicInteger beautyWordsXL = new AtomicInteger();
 
     public static void main(String[] args) {
-        String[] words = getWords(100_000);
+        String[] words = getWords(100_000, 3);
 
         threadsForChooseBeautyWords(words, List.of(
                 wordChecker::isPalindrome,
@@ -25,6 +25,7 @@ public class Main {
         System.out.println("Красивых слов с длиной 3: " + beautyWord3L.get() + " шт");
         System.out.println("Красивых слов с длиной 4: " + beautyWord4L.get() + " шт");
         System.out.println("Красивых слов с длиной 5: " + beautyWord5L.get() + " шт");
+        System.out.println("Всех прочих красивых слов: " + beautyWordsXL.get() + " шт");
     }
 
     public static void threadsForChooseBeautyWords(
@@ -44,8 +45,11 @@ public class Main {
         waitsForThreadsShutdown(wordChecksGroup);
     }
 
-    public static void countBeautyWords(String text) {
-        int wordLen = text.length();
+    public static void countBeautyWords(String word) {
+        int wordLen = word.length();
+        if (wordLen < 3) {
+            return;
+        }
         switch (wordLen) {
             case 3:
                 beautyWord3L.getAndIncrement();
@@ -57,9 +61,7 @@ public class Main {
                 beautyWord5L.getAndIncrement();
                 break;
             default:
-                throw new UnsupportedOperationException("no necessary counter" +
-                        " of beauty word " + wordLen + "L size"
-                );
+                beautyWordsXL.getAndIncrement();
         }
     }
 
@@ -74,19 +76,20 @@ public class Main {
         }
     }
 
-    public static String[] getWords(int number) {
+    public static String[] getWords(int number, int len) {
+        len = Math.max(len, 3);
         Random random = new Random();
         String[] texts = new String[number];
         for (int i = 0; i < texts.length; i++) {
-            texts[i] = generateText("abc", 3 + random.nextInt(3));
+            texts[i] = generateText("abc", 3 + random.nextInt(len));
         }
         return texts;
     }
 
-    public static String generateText(String letters, int length) {
+    public static String generateText(String letters, int len) {
         Random random = new Random();
         StringBuilder text = new StringBuilder();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < len; i++) {
             text.append(letters.charAt(random.nextInt(letters.length())));
         }
         return text.toString();
